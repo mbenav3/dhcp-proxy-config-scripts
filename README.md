@@ -4,7 +4,7 @@
 
 Deploying OpenShift 4.6 through the assisted installer method requires dynamic IP address assignment through a DHCP server.
 
-In this design, we will keep the cluster nodes in a private network exposing only the API anbd ingress endpoints.  To provide the cluster with access to the public domain, we will also require a **proxy server**
+In this design, we will keep the cluster nodes in a private network exposing only the API and ingress endpoints.  To provide the cluster with access to the public domain, we will also require a **proxy server**
 
 **Before getting started:**
 1. Provision a private subnet on the IBM Cloud; this will provide the installer with a pool of IP addresses to assign to each node
@@ -64,7 +64,9 @@ systemctl enable --now cockpit.socket;
 ```
 
 Once enabled, the cockpit user interface can be accessed at https://PROV_NODE_IP:9090/
-
+  
+---
+  
 ## Configuring ISC DHCP
 
 1. Install the DHCP service
@@ -81,9 +83,84 @@ vi /etc/dhcp/dhcpd.conf
 
 **Note:** [See the dhcpd.conf man page for the full list of configuration options](https://linux.die.net/man/5/dhcpd.conf)
 
-Updatete the firewall and enable the service
+Update the firewall and enable the service
 ```console
 systemctl enable --now dhcpd
 firewall-cmd --add-service=dhcp --zone=internal --permanent
 firewall-cmd --reload
 ```
+
+---
+
+## Configuring our forward-proxy
+
+### Enable IP forwarding
+
+Save the updated system settings in a new configuration file. Update this file with the contents of the included ip_forward.conf.template template file.
+
+```console
+vi /etc/sysctl.d/ip_forward.conf;
+```
+
+```console
+sysctl -p /etc/sysctl.d/ip_forward.conf
+sysctl -w net.ipv4.ip_forward=1;
+sysctl -w net.ipv4.conf.all.rp_filter=2;
+```
+
+### Update the firewall rules
+
+```console
+firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o eth1 -j MASQUERADE;
+firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i eth0 -o eth1 -j ACCEPT;
+firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i eth1 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT;
+
+firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -d 0.0.0.0/0 -j ACCEPT;
+firewall-cmd --permanent --zone=internal --add-forward-port=port=80:proto=tcp:toport=3128:toaddr=YOURPROXYPRIVADDR;
+
+firewall-cmd --permanent --zone=internal --add-service=http;
+firewall-cmd --permanent --zone=external --add-service=http;
+
+firewall-cmd --permanent --zone=internal --add-service=https;
+firewall-cmd --permanent --zone=external --add-service=https;
+```
+
+### Squid as a forward-proxy
+
+1. Install squid
+
+```console
+dnf install squid -y
+```
+
+1. Backup the default forward proxy configuration file
+
+```console
+cp /etc/squid/squid.conf /etc/squid/squid.conf.original
+```
+
+1. Update the configuration file with our settings - see the included tempalte file
+
+```console
+vi /etc/squid/squid.conf
+```
+
+1. Update the firewall
+
+```console
+sudo firewall-cmd --add-service=squid --permanent
+sudo firewall-cmd --reload
+```
+
+1. Enable and start Squid
+
+```console
+systemctl enable --now squid
+```
+
+1. Test your proxy, modify your listening port if different from 3128
+
+```console
+export PROXY_SERVER_URL=127.0.0.1
+curl -O -L "https://www.redhat.com/index.html" -x "$PROXY_SERVER_URL:3128"
+```  
