@@ -1,0 +1,27 @@
+#
+# DHCP Server Configuration file.
+#   see /usr/share/doc/dhcp-server/dhcpd.conf.example
+#   see dhcpd.conf(5) man page
+#
+authoritative;
+ddns-update-style interim;
+allow booting;
+allow bootp;
+default-lease-time 14400;
+max-lease-time 14400;
+
+        option routers                  10.5.202.1;
+        option broadcast-address        10.5.202.255;
+        option subnet-mask              255.255.255.0;
+        option domain-name-servers      10.0.80.11, 10.0.80.12;
+
+        subnet 10.5.202.0 netmask 255.255.255.0 {
+
+                range 10.5.202.50 10.5.202.254;
+
+                # Static entries
+                # host NetworkTestbench { hardware ethernet 00:50:56:86:6d:20; fixed-address 10.5.202.60; }
+
+                # Deny requests from hosts not listed above
+                # deny unknown-clients;
+        }
