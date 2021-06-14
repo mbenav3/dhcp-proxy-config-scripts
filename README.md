@@ -111,12 +111,16 @@ sysctl -w net.ipv4.conf.all.rp_filter=2;
 ### Update the firewall rules
 
 ```console
+export YOURPROXYPRIVADDR=
+```
+
+```console
 firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o eth1 -j MASQUERADE;
 firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i eth0 -o eth1 -j ACCEPT;
 firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i eth1 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT;
 
 firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -d 0.0.0.0/0 -j ACCEPT;
-firewall-cmd --permanent --zone=internal --add-forward-port=port=80:proto=tcp:toport=3128:toaddr=YOURPROXYPRIVADDR;
+firewall-cmd --permanent --zone=internal --add-forward-port=port=80:proto=tcp:toport=3128:toaddr=$YOURPROXYPRIVADDR;
 
 firewall-cmd --permanent --zone=internal --add-service=http;
 firewall-cmd --permanent --zone=external --add-service=http;
