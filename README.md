@@ -165,6 +165,5 @@ systemctl enable --now squid
 1. Test your proxy, modify your listening port if different from 3128
 
 ```console
-export PROXY_SERVER_URL=127.0.0.1
-curl -O -L "https://www.redhat.com/index.html" -x "$PROXY_SERVER_URL:3128"
+curl -O -L "https://www.redhat.com/index.html" -x "$YOURPROXYPRIVADDR:3128"
 ```  
