@@ -110,6 +110,8 @@ sysctl -w net.ipv4.conf.all.rp_filter=2;
 
 ### Update the firewall rules
 
+Create an environment variables that points to this machines's private IP address
+
 ```console
 export YOURPROXYPRIVADDR=
 ```
@@ -143,7 +145,7 @@ dnf install squid -y
 cp /etc/squid/squid.conf /etc/squid/squid.conf.original
 ```
 
-1. Update the configuration file with our settings - see the included tempalte file
+1. Update the configuration file with our settings - see the included template file
 
 ```console
 vi /etc/squid/squid.conf
@@ -167,3 +169,13 @@ systemctl enable --now squid
 ```console
 curl -O -L "https://www.redhat.com/index.html" -x "$YOURPROXYPRIVADDR:3128"
 ```  
+
+
+### To apply changes to your Squid configuration
+
+```console
+systemctl --system daemon-reload;
+squid -k reconfigure
+systemctl reload squid;
+systemctl restart squid;
+```
