@@ -32,7 +32,7 @@ certificatesResolvers:
     dns-cloudflare:    
       acme:
         email: mbenav@us.ibm.com
-        storage: /etc/traefik//letsencrypt/acme.json
+        storage: /etc/traefik/letsencrypt/acme.json
         # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
         dnsChallenge:
           provider: cloudflare
