@@ -3,7 +3,8 @@ tcp:
     ocp-api-router:
       entryPoints:
         - "tcp"
-      rule: "HostSNI(`api.mas-sandbox-ep.democore.cloud`)"
+      rule: "HostSNI(`api.YOURCLUSTER-NAME.YOUR-DOMAIN`)"
+      # e.g. - api.mycluster.example.com
       service: "ocp-api-service"
       tls:
         passthrough: true
@@ -12,7 +13,9 @@ tcp:
       service: "ocp-apps-service"
       entryPoints:
         - "https"
-      rule: "HostSNI(`console-openshift-console.apps.mas-sandbox-ep.democore.cloud`,`oauth-openshift.apps.mas-sandbox-ep.democore.cloud`)"
+      rule: "HostSNI(`console-openshift-console.apps.YOURCLUSTER-NAME.YOUR-DOMAIN`,`oauth-openshift.YOURCLUSTER-NAME.YOUR-DOMAIN`)"
+      # e.g. - console-openshift-console.apps.mycluster.example.com
+      #      - coauth-openshift.apps.mycluster.example.com
       tls:
         passthrough: true
   
@@ -20,11 +23,11 @@ tcp:
     ocp-api-service:
       loadBalancer:
         servers:
-          - address: "10.121.66.8:6443"
+          - address: "REPLACE_THIS_WITH_YOUR_OCP_API_IP_ADDRESS:6443"
     ocp-apps-service:
       loadBalancer:
         servers:
-          - address: "10.121.66.9:443"
+          - address: "REPLACE_THIS_WITH_YOUR_OCP_INGRESS_IP_ADDRESS:443"
 
 http:
   routers:
@@ -32,8 +35,10 @@ http:
       service: api@internal
       entryPoints:
       - https
-      rule: "Host(`traefik.mas-sandbox-ep.democore.cloud`)"
+      rule: "Host(`traefik.YOURCLUSTER-NAME.YOUR-DOMAIN`)"
+      # e.g. - traefik.mycluster.example.com
       tls:
         certResolver: dns-cloudflare
         domains:
-        - main: traefik.mas-sandbox-ep.democore.cloud
+        - main: traefik.YOURCLUSTER-NAME.YOUR-DOMAIN
+        # e.g. - traefik.mycluster.example.com

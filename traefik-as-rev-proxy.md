@@ -13,11 +13,11 @@ https://docs.openshift.com/container-platform/4.7/installing/installing_bare_met
 
 - Hostname
 - Cluster name
-- Private IPs (Cluster API, Ingress)
+- Cluster Private IP addresses (Cluster API, Ingress)
 
-Option 1: Run on Docker
+  Option 1: Run on Docker
 
-Supported on the platforms in this URL: https://docs.docker.com/engine/install/
+  Supported on the platforms in this URL: https://docs.docker.com/engine/install/
 
 ### Instructions for CentOS and other non-RHEL systems:
 
@@ -48,7 +48,6 @@ docker-compose --verbose -f /opt/traefik/docker-compose.yaml up -d --remove-orph
 
 ### Installing on RHEL8
 
-Credit: https://itnext.io/install-openshift-4-2-on-kvm-1117162333d0
 
 1. Install traefik
 
@@ -72,4 +71,33 @@ touch /etc/systemd/system/traefik.service
 
 1. create a traefik.yaml file and paste the contents of the template
 
-1. 
+1. start and enable the service
+
+```console
+systemctl start traefik.service  
+systemctl enable traefik.service
+```
+
+1. Verify the successful deployment of the traefik service:  
+
+```console
+systemctl status traefik.service  
+```
+
+1. Update your DNS with the following entries:
+
+```console
+*.YOUR-CLUSTER-NAME.YOUR-DOMAIN      A	  YOUR_PROXY_SERVER_PUBLIC_IP_ADDRESS
+*.apps.YOUR-CLUSTER-NAME.YOUR-DOMAIN   A	  YOUR_PROXY_SERVER_PUBLIC_IP_ADDRESS
+```
+
+**NOTE:** the wildcard subdomain declaration at the cluster domain level (*.mas-sandbox-ep.democore.cloud) is preferred in this case, since we are also hosting the traefik dashboard at traefik.YOUR-CLUSTER-NAME.YOUR-DOMAIN
+
+1. The service is now operational. To view a list of your virtual routers and services, navigate to the Traefik service dashboard:  
+   
+  https://traefik.YOUR-CLUSTER-NAME.YOUR-DOMAIN/dashboard/
+
+
+Because Traefik routes requests made from the public domain to the openshift cluster in the private domain, you may also disconnect from the VPN and access your OpenShift cluster console through your cluster's console URL:  
+
+  https://console-openshift-console.apps.YOUR-CLUSTER-NAME.YOUR-DOMAIN/dashboard/
