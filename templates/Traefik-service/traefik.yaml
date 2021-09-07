@@ -2,7 +2,7 @@ global:
   checkNewVersion: true
   sendAnonymousUsage: false
 log:
-  filePath: "/traefik.log"
+  filePath: "/etc/traefik/traefik.log"
   level: INFO
   format: json
 # serverstransport:
@@ -26,13 +26,13 @@ defaultEntryPoints:
   - https
 providers:
   file:
-    filename: "/conf.d/components.yaml"
+    filename: "/etc/traefik/conf.d/components.yaml"
     watch: true
 certificatesResolvers:
     dns-cloudflare:    
       acme:
         email: mbenav@us.ibm.com
-        storage: /letsencrypt/acme.json
+        storage: /etc/traefik//letsencrypt/acme.json
         # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
         dnsChallenge:
           provider: cloudflare

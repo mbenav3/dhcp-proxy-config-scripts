@@ -1,8 +1,13 @@
 # Reference URLS
  
-Architecture: https://docs.openshift.com/container-platform/4.7/installing/installing_bare_metal_ipi/ipi-install-overview.html
+Traefik Docs:  
+https://doc.traefik.io/traefik/
 
-# Installation Instructions
+Network Architecture (OpenShift Docs):  
+https://docs.openshift.com/container-platform/4.7/installing/installing_bare_metal_ipi/ipi-install-overview.html
+
+
+# Installating Traefik
 
 1. Update the template with your:
 
