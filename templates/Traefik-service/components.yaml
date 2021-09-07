@@ -1,0 +1,39 @@
+tcp:
+  routers:
+    ocp-api-router:
+      entryPoints:
+        - "tcp"
+      rule: "HostSNI(`api.mas-sandbox-ep.democore.cloud`)"
+      service: "ocp-api-service"
+      tls:
+        passthrough: true
+    
+    ocp-apps-router:
+      service: "ocp-apps-service"
+      entryPoints:
+        - "https"
+      rule: "HostSNI(`console-openshift-console.apps.mas-sandbox-ep.democore.cloud`,`oauth-openshift.apps.mas-sandbox-ep.democore.cloud`)"
+      tls:
+        passthrough: true
+  
+  services:
+    ocp-api-service:
+      loadBalancer:
+        servers:
+          - address: "10.121.66.8:6443"
+    ocp-apps-service:
+      loadBalancer:
+        servers:
+          - address: "10.121.66.9:443"
+
+http:
+  routers:
+    traefik:
+      service: api@internal
+      entryPoints:
+      - https
+      rule: "Host(`traefik.mas-sandbox-ep.democore.cloud`)"
+      tls:
+        certResolver: dns-cloudflare
+        domains:
+        - main: traefik.mas-sandbox-ep.democore.cloud

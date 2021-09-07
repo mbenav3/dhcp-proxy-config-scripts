@@ -1,0 +1,14 @@
+[Unit]
+Description=Traefik
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/traefik.pid
+ExecStart=/usr/local/bin/traefik
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
