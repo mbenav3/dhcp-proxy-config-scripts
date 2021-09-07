@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  traefik:
+    image: traefik:v2.5.1
+    container_name: traefik
+    ports:
+      - 80:80
+      - 443:443
+      - 6443:6443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/traefik/traefik.yaml:/traefik.yaml:ro
+      - /opt/traefik/configs:/configs
+      - /opt/traefik/traefik.log:/traefik.log
+      - /opt/traefik/letsencrypt:/letsencrypt
+    environment:
+      - CF_API_EMAIL=mbenav@us.ibm.com
+      - CF_API_KEY=ENTERTYOURCLOUDFLAREAPIKEY
