@@ -48,6 +48,7 @@ Using either method, I follow the following procedure when the server first boot
 *Note:* find the names of your network interfaces: `ifconfig`
 
 ```console
+dnf install firewalld -y;
 systemctl enable firewalld --now;
 firewall-cmd --change-interface=eth1 --zone=external --permanent;
 firewall-cmd --change-interface=eth0 --zone=internal --permanent;
